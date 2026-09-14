@@ -42,7 +42,7 @@
 
   <rect x="62" y="440" width="536" height="120" rx="12" fill="#EAF2FD" stroke="#9CC0EE"/>
   <text x="78" y="466" font-size="14" font-weight="600" fill="#11315D">Proactive surface: macOS notification + WorkflowsPanel</text>
-  <text x="78" y="488" font-size="12" fill="#43546E">"Cofounder noticed a repeated workflow: Supplier invoice booking, 11× in 5 days, ~40 min/week"</text>
+  <text x="78" y="488" font-size="12" fill="#43546E">"Cofounder noticed a repeated workflow: Weekly Invoice Data Entry, 11× in 5 days"</text>
   <text x="78" y="508" font-size="12" fill="#43546E">Each workflow card shows its steps and evidence, with "Take it over" and "Not useful" buttons.</text>
   <text x="78" y="528" font-size="12" fill="#43546E">Facts and workflows are listed and can be deleted.</text>
   <line x1="187" y1="400" x2="187" y2="436" stroke="#1A8F4C" stroke-width="2" marker-end="url(#g)"/>
