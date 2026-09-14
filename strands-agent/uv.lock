@@ -223,14 +223,14 @@ source = { editable = "." }
 dependencies = [
     { name = "bedrock-agentcore" },
     { name = "boto3" },
-    { name = "strands-agents" },
+    { name = "strands-agents", extra = ["ollama"] },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "bedrock-agentcore", specifier = ">=1.23" },
     { name = "boto3", specifier = ">=1.35" },
-    { name = "strands-agents", specifier = ">=1.55" },
+    { name = "strands-agents", extras = ["ollama"], specifier = ">=1.55" },
 ]
 
 [[package]]
@@ -469,6 +469,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6a/dd/1c4417dc0b722c23a1669032d5f044e41170fe5d4773b488a50fcce98c32/mcp_types-2.1.1.tar.gz", hash = "sha256:77dcbe48fba73cca71a673f2646a5f037a017b7a0a07ac89cec1113028890eda", size = 66674, upload-time = "2026-08-25T16:14:03.861Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/71/d0/242e63c510f4a17381f55b1549a3f94f5687a0595984febd2b6f87a687a0/mcp_types-2.1.1-py3-none-any.whl", hash = "sha256:26f9f7f03f2a5730717a5b98e2ab7eb640ac352d05a00cdc725c311864778295", size = 69656, upload-time = "2026-08-25T16:14:00.667Z" },
+]
+
+[[package]]
+name = "ollama"
+version = "0.6.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fc/72/5f12423b6b39ca8430fbe56f77fcf4ef60f63067c7c4a2e30e200ed9ec16/ollama-0.6.2.tar.gz", hash = "sha256:936d55daa684f474364c098611c933626f8d6c7d67065c5b7ae0c477b508b07f", size = 53145, upload-time = "2026-04-29T21:21:15.018Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c4/ab/d6722beeb2d10f7a3b9ff49375708904fde18f82b5609a0bc4aeb5996a4d/ollama-0.6.2-py3-none-any.whl", hash = "sha256:3ad7daab28e5a973445c36a73882a3ef698c2ebb00e21e308652741577509f7d", size = 15115, upload-time = "2026-04-29T21:21:13.794Z" },
 ]
 
 [[package]]
@@ -1152,6 +1165,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0d/80/f65af6df0300f1d09e5c0d0cc7ebb1e8183d3922829cec2c255c91188ec9/strands_agents-1.55.1.tar.gz", hash = "sha256:55dc609a9d7c75d61842304180456a815e60b34d00ce089c29362cedd274cd2a", size = 1622097, upload-time = "2026-09-09T21:24:37.159Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fa/a0/5d7dc1c6df4b4717d7be516c32e5c9383ef0676166fb06260b6d88c4c9ab/strands_agents-1.55.1-py3-none-any.whl", hash = "sha256:3b62a8ca6f34d14140789900e35205c0032fa4a92f6147c7f69a7fda149da7ab", size = 821393, upload-time = "2026-09-09T21:24:35.259Z" },
+]
+
+[package.optional-dependencies]
+ollama = [
+    { name = "ollama" },
 ]
 
 [[package]]

@@ -80,6 +80,7 @@ async function invokeLocal(payload) {
 }
 
 let running = null;
+let agentCoreDownUntil = 0;
 let lastRun = { at: null, summary: '', error: '', transport: '' };
 
 async function analyze({ request } = {}) {
@@ -94,12 +95,31 @@ async function analyze({ request } = {}) {
     const payload = { events, known_workflows: known.workflows, known_facts: known.facts, request };
     const via = transport();
     try {
-      const out = via === 'agentcore' ? await invokeAgentCore(payload) : await invokeLocal(payload);
+      let out;
+      let usedVia = via;
+      if (via === 'agentcore' && Date.now() >= agentCoreDownUntil) {
+        try {
+          out = await Promise.race([
+            invokeAgentCore(payload),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('AgentCore did not answer within 120 s')), 120000)),
+          ]);
+          if (out && out.error) throw new Error(String(out.error));
+        } catch (err) {
+          // The cloud agent cannot reach a model (e.g. Bedrock quota not granted yet):
+          // run the same Strands agent locally, which can fall back to a local model.
+          agentCoreDownUntil = Date.now() + 15 * 60 * 1000; // do not wait on it again for every run
+          usedVia = `local (AgentCore failed: ${String((err && err.message) || err).slice(0, 160)})`;
+          out = await invokeLocal(payload);
+        }
+      } else {
+        if (via === 'agentcore') usedVia = 'local (AgentCore paused after a recent failure)';
+        out = await invokeLocal(payload);
+      }
       if (out && out.error) throw new Error(String(out.error));
       const before = new Set(memory.list().workflows.map((w) => w.id));
       const mem = memory.merge({ workflows: out.workflows || [], facts: out.facts || [] });
       const detected = (out.workflows || []).filter((w) => !before.has(w.id));
-      lastRun = { at: new Date().toISOString(), summary: out.summary || '', error: '', transport: via };
+      lastRun = { at: new Date().toISOString(), summary: out.summary || '', error: '', transport: usedVia, modelProvider: out.model_provider || '' };
       return { ok: true, ...lastRun, detected, memory: mem };
     } catch (err) {
       lastRun = { at: new Date().toISOString(), summary: '', error: String((err && err.message) || err), transport: via };

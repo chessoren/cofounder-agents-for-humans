@@ -17,6 +17,12 @@ from datetime import datetime
 from strands import Agent, tool
 from strands.models.bedrock import BedrockModel
 
+# When Bedrock cannot serve the call (a brand-new account starts with a 0 quota,
+# model access pending, no network to AWS), the same agent, tools and prompt run
+# on a local model through Ollama, so detection never silently stops.
+FALLBACK_ERRORS = ("Throttl", "AccessDenied", "ResourceNotFound", "ValidationException", "access",
+                   "agreement", "NoCredentials", "EndpointConnection", "Could not connect")
+
 from . import activity
 
 SYSTEM_PROMPT = """You are the Workflow Analyst inside Cofounder, a macOS agent that watches how a \
@@ -190,6 +196,37 @@ def build_model(model_id: str | None = None) -> BedrockModel:
     return BedrockModel(**kwargs)
 
 
+def bedrock_probe() -> None:
+    import boto3
+    from botocore.config import Config
+
+    model = build_model()
+    client = boto3.client("bedrock-runtime", region_name=model.config.get("region_name") or os.environ.get("AWS_REGION", "us-west-2"),
+                          config=Config(retries={"max_attempts": 1, "mode": "standard"}, connect_timeout=5, read_timeout=20))
+    client.converse(modelId=model.config["model_id"], messages=[{"role": "user", "content": [{"text": "ping"}]}],
+                    inferenceConfig={"maxTokens": 1})
+
+
+def ollama_host() -> str:
+    return os.environ.get("COFOUNDER_OLLAMA_HOST", "http://127.0.0.1:11434")
+
+
+def ollama_available() -> bool:
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen(f"{ollama_host()}/api/tags", timeout=2) as r:
+            return r.status == 200
+    except OSError:
+        return False
+
+
+def build_local_model():
+    from strands.models.ollama import OllamaModel
+
+    return OllamaModel(host=ollama_host(), model_id=os.environ.get("COFOUNDER_OLLAMA_MODEL", "gemma4:e2b"), temperature=0.2)
+
+
 def analyze(events: list[dict], known_workflows: list[dict] | None = None,
             memory_db: str | None = None, request: str | None = None, verbose: bool = False,
             known_facts: list[dict] | None = None) -> dict:
@@ -212,14 +249,18 @@ def analyze(events: list[dict], known_workflows: list[dict] | None = None,
         **options,
     )
     prompt = request or "Analyse my recent activity and find the repetitive workflows you can take over."
+    provider = "bedrock"
     try:
+        # A one-shot probe with no retries: a refused account fails in a second here,
+        # instead of minutes of throttling back-off inside the agent loop.
+        bedrock_probe()
         result = agent(prompt)
-    except Exception as err:  # the Anthropic model not yet enabled on this account
-        fallback = os.environ.get("COFOUNDER_BEDROCK_FALLBACK_MODEL", "us.amazon.nova-pro-v1:0")
-        if not any(k in f"{type(err).__name__} {err}" for k in ("AccessDenied", "ResourceNotFound", "ValidationException", "access", "agreement")):
+    except Exception as err:
+        if not any(k in f"{type(err).__name__} {err}" for k in FALLBACK_ERRORS) or not ollama_available():
             raise
+        provider = "ollama"
         ctx.candidates, ctx.workflows, ctx.facts = {}, [], []
-        agent = Agent(model=build_model(fallback), system_prompt=SYSTEM_PROMPT, tools=build_tools(ctx),
+        agent = Agent(model=build_local_model(), system_prompt=SYSTEM_PROMPT, tools=build_tools(ctx),
                       name="cofounder-workflow-analyst", **options)
         result = agent(prompt)
     return {
@@ -227,4 +268,5 @@ def analyze(events: list[dict], known_workflows: list[dict] | None = None,
         "workflows": ctx.workflows,
         "facts": ctx.facts,
         "stats": {"events": len(ctx.events), "candidates": len(ctx.candidates)},
+        "model_provider": provider,
     }

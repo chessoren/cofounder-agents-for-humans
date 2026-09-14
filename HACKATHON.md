@@ -35,6 +35,9 @@ Freelancers, bookkeepers, recruiters, account managers and operations people. Th
   The activity travels in the payload, so the cloud agent never touches the disk.
 - **Amazon Bedrock Converse API**: the desktop app's chat, the executor's planner and the vision fallback.
 - **Electron desktop app**: System Events observer, JSON memory, React UI, nut.js input, a JXA accessibility reader.
+- **Resilience**: if Bedrock cannot serve a call (for example, a new AWS account whose Bedrock token quota is still 0,
+  or missing credentials), the same Strands agent, tools and prompt fall back to a local model through Strands'
+  `OllamaModel`. The AgentCore client falls back to the local Strands server. The app reports which model provider answered.
 
 ## Challenges
 - Separating *workflows* from *navigation*: raw sequences are dominated by alt-tab laps and rotations of the same loop.

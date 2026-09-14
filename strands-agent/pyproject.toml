@@ -6,7 +6,7 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = [
-  "strands-agents>=1.55",
+  "strands-agents[ollama]>=1.55",
   "bedrock-agentcore>=1.23",
   "boto3>=1.35",
 ]

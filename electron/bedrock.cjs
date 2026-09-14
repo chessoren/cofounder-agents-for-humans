@@ -11,11 +11,38 @@ const MODEL_ID = process.env.COFOUNDER_BEDROCK_MODEL || 'global.anthropic.claude
 // enabled on the account, every call falls back to it instead of failing.
 const FALLBACK_MODEL_ID = process.env.COFOUNDER_BEDROCK_FALLBACK_MODEL || 'us.amazon.nova-pro-v1:0';
 let activeModel = MODEL_ID;
+let bedrockDownUntil = 0;
+let bedrockDownReason = '';
 const ACCESS_ERRORS = /AccessDenied|ResourceNotFound|ValidationException|not authorized|don't have access|model access|INVALID_PAYMENT|agreement/i;
+// Last resort when Bedrock cannot serve at all (0 quota on a new account, no
+// credentials, offline): a local model through Ollama, if one is running.
+const OLLAMA_HOST = process.env.COFOUNDER_OLLAMA_HOST || 'http://127.0.0.1:11434';
+const OLLAMA_MODEL = process.env.COFOUNDER_OLLAMA_MODEL || 'gemma4:e2b';
+const LOCAL_FALLBACK_ERRORS = /Throttl|Too many tokens|AccessDenied|Credentials|ResourceNotFound|ValidationException|ENOTFOUND|ECONNREFUSED|network/i;
+
+async function converseLocal({ sys, turns, maxTokens, temperature, json }) {
+  const messages = [];
+  if (sys.trim()) messages.push({ role: 'system', content: sys });
+  for (const t of turns) {
+    const text = t.content.filter((c) => c.text).map((c) => c.text).join('\n');
+    const images = t.content.filter((c) => c.image).map((c) => Buffer.from(c.image.source.bytes).toString('base64'));
+    messages.push({ role: t.role, content: text, ...(images.length ? { images } : {}) });
+  }
+  const r = await fetch(`${OLLAMA_HOST}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: OLLAMA_MODEL, messages, stream: false, ...(json ? { format: 'json' } : {}), options: { temperature, num_predict: maxTokens } }),
+    signal: AbortSignal.timeout(180000),
+  });
+  if (!r.ok) throw new Error(`Ollama answered ${r.status}`);
+  const j = await r.json();
+  return String(j.message?.content || '').trim();
+}
 
 let client = null;
 function getClient() {
-  if (!client) client = new BedrockRuntimeClient({ region: REGION });
+  // One attempt: a throttled or refused account must fall back in a second, not after minutes of back-off.
+  if (!client) client = new BedrockRuntimeClient({ region: REGION, maxAttempts: 1 });
   return client;
 }
 
@@ -69,6 +96,7 @@ async function converse({ system, prompt, messages, images, json = false, maxTok
     inferenceConfig: { maxTokens, temperature: temperature ?? (json ? 0.1 : 0.5) },
   }));
   try {
+    if (Date.now() < bedrockDownUntil) throw Object.assign(new Error(bedrockDownReason), { name: 'BedrockUnavailable' });
     let out;
     try {
       out = await call(activeModel);
@@ -80,7 +108,19 @@ async function converse({ system, prompt, messages, images, json = false, maxTok
     const text = (out.output?.message?.content || []).map((c) => c.text || '').join('').trim();
     return { ok: true, text, model: activeModel };
   } catch (err) {
-    return { ok: false, error: `${err.name || 'BedrockError'}: ${err.message || err}` };
+    const error = `${err.name || 'BedrockError'}: ${err.message || err}`;
+    if (LOCAL_FALLBACK_ERRORS.test(error) && err.name !== 'BedrockUnavailable') {
+      // Remember it for 10 minutes: every step of a mission should not pay the failed round-trip again.
+      bedrockDownUntil = Date.now() + 10 * 60 * 1000;
+      bedrockDownReason = error;
+    }
+    if (LOCAL_FALLBACK_ERRORS.test(error)) {
+      try {
+        const text = await converseLocal({ sys, turns, maxTokens, temperature: temperature ?? (json ? 0.1 : 0.5), json });
+        return { ok: true, text, model: `ollama:${OLLAMA_MODEL}`, bedrockError: error };
+      } catch (_) { /* no local model either: report the Bedrock error */ }
+    }
+    return { ok: false, error };
   }
 }
 

@@ -66,6 +66,11 @@ npm run deploy:agentcore   # configures and deploys strands-agent/, then writes 
 
 Without `agentcore-runtime.json`, the app starts the agent locally with `uv` (`strands-agent/main.py`, port 8080).
 
+**Model fallback.** Amazon Bedrock is the primary model (Claude Sonnet 4.6). If Bedrock cannot serve a call
+(quota not granted yet, no credentials, offline), the app and the Strands agent fall back to a local model through
+[Ollama](https://ollama.com) (`COFOUNDER_OLLAMA_MODEL`, default `gemma4:e2b`). If AgentCore cannot reach a model,
+the app runs the same agent locally.
+
 ## Try it with demo activity
 
 ```bash
