@@ -14,6 +14,9 @@ const CARD: React.CSSProperties = {
   backdropFilter: 'blur(10px)',
 };
 
+// Model summaries arrive as markdown: show them as plain, readable text.
+const plain = (text: string) => text.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#+\s*/gm, '').trim();
+
 export default function WorkflowsPanel() {
   const api = typeof window !== 'undefined' ? window.mira : undefined;
   const [obs, setObs] = useState<MiraObserverState | null>(null);
@@ -82,7 +85,7 @@ export default function WorkflowsPanel() {
             {busy ? 'Analysing your week…' : 'Analyse now'}
           </button>
         </div>
-        {note && <p className="text-[12.5px] mb-2 leading-snug" style={{ color: INK }}>{note}</p>}
+        {note && <p className="text-[12.5px] mb-2 leading-snug whitespace-pre-line" style={{ color: INK }}>{plain(note)}</p>}
         {!mem.workflows.length ? (
           <p className="text-[12.5px]" style={{ color: SUB }}>
             No repeated workflow confirmed yet. Cofounder checks every 30 minutes and tells you as soon as it finds one.
