@@ -22,6 +22,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--offline", action="store_true", help="skip the model; print mined candidates")
     p.add_argument("--request", help="extra instruction for the agent")
     p.add_argument("--now", type=float, help="treat this epoch second as 'now' (for replaying sample logs)")
+    p.add_argument("--verbose", action="store_true", help="stream the agent's reasoning and tool calls")
     args = p.parse_args(argv)
 
     events = activity.load_events(args.log, hours=args.hours, now=args.now)
@@ -37,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         from .agent import analyze
 
-        out = analyze(events, memory_db=str(activity.default_memory_db()), request=args.request)
+        out = analyze(events, memory_db=str(activity.default_memory_db()), request=args.request, verbose=args.verbose)
     json.dump(out, sys.stdout, indent=2, ensure_ascii=False)
     sys.stdout.write("\n")
     return 0
