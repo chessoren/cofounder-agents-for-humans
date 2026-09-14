@@ -16,6 +16,7 @@ from datetime import datetime
 
 from strands import Agent, tool
 from strands.models.bedrock import BedrockModel
+from strands.types.exceptions import MaxTokensReachedException
 
 # When Bedrock cannot serve the call (a brand-new account starts with a 0 quota,
 # model access pending, no network to AWS), the same agent, tools and prompt run
@@ -224,7 +225,9 @@ def ollama_available() -> bool:
 def build_local_model():
     from strands.models.ollama import OllamaModel
 
-    return OllamaModel(host=ollama_host(), model_id=os.environ.get("COFOUNDER_OLLAMA_MODEL", "gemma4:e2b"), temperature=0.2)
+    # Small local models think out loud: give them room, or the loop stops mid-tool-call.
+    return OllamaModel(host=ollama_host(), model_id=os.environ.get("COFOUNDER_OLLAMA_MODEL", "gemma4:e2b"),
+                       temperature=0.2, max_tokens=8192)
 
 
 def analyze(events: list[dict], known_workflows: list[dict] | None = None,
@@ -262,7 +265,11 @@ def analyze(events: list[dict], known_workflows: list[dict] | None = None,
         ctx.candidates, ctx.workflows, ctx.facts = {}, [], []
         agent = Agent(model=build_local_model(), system_prompt=SYSTEM_PROMPT, tools=build_tools(ctx),
                       name="cofounder-workflow-analyst", **options)
-        result = agent(prompt)
+        try:
+            result = agent(prompt)
+        except MaxTokensReachedException:
+            # The partial turn is kept in the conversation: let the agent finish its work.
+            result = agent("Continue exactly where you stopped, then give the short summary.")
     return {
         "summary": str(result).strip(),
         "workflows": ctx.workflows,

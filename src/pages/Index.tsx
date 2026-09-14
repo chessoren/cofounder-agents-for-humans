@@ -2385,7 +2385,9 @@ export default function Index() {
         return;
       }
       setInstallPercent(100);
-      setInstallMessage(`Connected to Amazon Bedrock${r.model ? ` · ${r.model}` : ''}${r.region ? ` (${r.region})` : ''}`);
+      setInstallMessage(r.model && r.model.startsWith('ollama:')
+        ? `Amazon Bedrock is not available on this account yet — using the local model ${r.model.slice(7)} instead.`
+        : `Connected to Amazon Bedrock${r.model ? ` · ${r.model}` : ''}${r.region ? ` (${r.region})` : ''}`);
       setTimeout(() => finishInstall(), 900);
     } catch (err: any) {
       setInstallPercent(0);

@@ -44,18 +44,22 @@ EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 LONG_NUM_RE = re.compile(r"\b\d{6,}\b")
 
 
+# The desktop app's own data folder (electron/main.cjs sets it explicitly).
+APP_DATA = Path.home() / "Library" / "Application Support" / "Cofounder Agents for Humans"
+
+
 def default_log_path() -> Path:
     override = os.environ.get("COFOUNDER_OBSERVATION_LOG")
     if override:
         return Path(override).expanduser()
-    return Path.home() / "Library" / "Application Support" / "cofounder-desktop" / "observation.jsonl"
+    return APP_DATA / "observation.jsonl"
 
 
 def default_memory_db() -> Path:
     override = os.environ.get("COFOUNDER_MEMORY_DB")
     if override:
         return Path(override).expanduser()
-    return Path.home() / "Library" / "Application Support" / "cofounder-desktop" / "cofounder-memory.db"
+    return APP_DATA / "cofounder-memory.db"
 
 
 def redact(text: str) -> str:
