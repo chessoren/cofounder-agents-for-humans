@@ -1,0 +1,22 @@
+[project]
+name = "cofounder-agent"
+version = "1.0.0"
+description = "Strands agent that detects repetitive professional workflows from Cofounder's activity stream and turns them into automations."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+  "strands-agents>=1.55",
+  "bedrock-agentcore>=1.23",
+  "boto3>=1.35",
+]
+
+[project.scripts]
+cofounder-agent = "cofounder_agent.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["cofounder_agent"]

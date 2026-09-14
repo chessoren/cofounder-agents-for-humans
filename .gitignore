@@ -1,0 +1,20 @@
+node_modules
+dist
+dist-electron
+release
+.netlify
+*.log
+.DS_Store
+# secrets — do not commit the Vertex service-account key
+toilet-finder-key.json
+
+# local data — never publish
+.mira-accounts.json*
+.mira-run*.log
+.electron-dev.log
+agentcore-runtime.json
+.bedrock_agentcore.yaml
+.bedrock_agentcore/
+strands-agent/.venv
+*.egg-info
+__pycache__/

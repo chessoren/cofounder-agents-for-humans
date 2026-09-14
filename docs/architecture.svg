@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="1200" height="780" font-family="Inter, -apple-system, Segoe UI, sans-serif">
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3D82DE"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C7691A"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1A8F4C"/></marker>
+  </defs>
+  <rect width="1200" height="780" fill="#F4F6FA"/>
+  <text x="40" y="48" font-size="26" font-weight="700" fill="#11315D">Cofounder: architecture</text>
+  <text x="40" y="74" font-size="14" fill="#5A6B85">Watch how a professional works → detect what they repeat → remember it precisely → take it over.</text>
+
+  <!-- MAC -->
+  <rect x="40" y="100" width="580" height="640" rx="18" fill="#fff" stroke="#C9D6EA"/>
+  <text x="62" y="130" font-size="16" font-weight="700" fill="#11315D">Your Mac: Cofounder desktop app (Electron)</text>
+
+  <rect x="62" y="150" width="250" height="100" rx="12" fill="#EAF2FD" stroke="#9CC0EE"/>
+  <text x="78" y="176" font-size="14" font-weight="600" fill="#11315D">observer.cjs</text>
+  <text x="78" y="196" font-size="12" fill="#43546E">every 2 s via System Events:</text>
+  <text x="78" y="212" font-size="12" fill="#43546E">front app · window title · tab URL</text>
+  <text x="78" y="230" font-size="11" fill="#7A8AA3">no keystrokes · pause / erase in UI</text>
+
+  <rect x="348" y="150" width="250" height="100" rx="12" fill="#EAF2FD" stroke="#9CC0EE"/>
+  <text x="364" y="176" font-size="14" font-weight="600" fill="#11315D">observation.jsonl</text>
+  <text x="364" y="196" font-size="12" fill="#43546E">one line per foreground change</text>
+  <text x="364" y="212" font-size="12" fill="#43546E">local, bounded (user data dir)</text>
+  <line x1="312" y1="200" x2="344" y2="200" stroke="#3D82DE" stroke-width="2" marker-end="url(#b)"/>
+
+  <rect x="348" y="290" width="250" height="110" rx="12" fill="#FFF4E8" stroke="#E9B27A"/>
+  <text x="364" y="316" font-size="14" font-weight="600" fill="#7A3E08">workflows.cjs</text>
+  <text x="364" y="336" font-size="12" fill="#6B4A2A">every 30 min or "Analyse now":</text>
+  <text x="364" y="352" font-size="12" fill="#6B4A2A">last 7 days + known memory</text>
+  <text x="364" y="370" font-size="12" fill="#6B4A2A">→ InvokeAgentRuntime (SigV4)</text>
+  <text x="364" y="388" font-size="11" fill="#9A7A5A">fallback: local Strands server :8080</text>
+  <line x1="473" y1="250" x2="473" y2="286" stroke="#3D82DE" stroke-width="2" marker-end="url(#b)"/>
+
+  <rect x="62" y="290" width="250" height="110" rx="12" fill="#E9F7EF" stroke="#8ED0AA"/>
+  <text x="78" y="316" font-size="14" font-weight="600" fill="#0E5A30">memory.cjs</text>
+  <text x="78" y="336" font-size="12" fill="#2F5A43">workflows: steps, trigger, frequency,</text>
+  <text x="78" y="352" font-size="12" fill="#2F5A43">time saved, confidence, evidence,</text>
+  <text x="78" y="368" font-size="12" fill="#2F5A43">automation mission</text>
+  <text x="78" y="386" font-size="12" fill="#2F5A43">facts: reconfirmed, never duplicated</text>
+  <line x1="344" y1="345" x2="316" y2="345" stroke="#1A8F4C" stroke-width="2" marker-end="url(#g)"/>
+
+  <rect x="62" y="440" width="536" height="120" rx="12" fill="#EAF2FD" stroke="#9CC0EE"/>
+  <text x="78" y="466" font-size="14" font-weight="600" fill="#11315D">Proactive surface: macOS notification + WorkflowsPanel</text>
+  <text x="78" y="488" font-size="12" fill="#43546E">"Cofounder noticed a repeated workflow: Supplier invoice booking, 11× in 5 days, ~40 min/week"</text>
+  <text x="78" y="508" font-size="12" fill="#43546E">Each workflow card shows its steps and evidence, with "Take it over" and "Not useful" buttons.</text>
+  <text x="78" y="528" font-size="12" fill="#43546E">Facts and workflows are listed and can be deleted.</text>
+  <line x1="187" y1="400" x2="187" y2="436" stroke="#1A8F4C" stroke-width="2" marker-end="url(#g)"/>
+
+  <rect x="62" y="590" width="536" height="126" rx="12" fill="#fff" stroke="#9CC0EE" stroke-dasharray="5 4"/>
+  <text x="78" y="616" font-size="14" font-weight="600" fill="#11315D">Computer-use executor (agent/orchestrator.cjs)</text>
+  <text x="78" y="638" font-size="12" fill="#43546E">plan: Bedrock Converse compiles the mission into UI steps</text>
+  <text x="78" y="656" font-size="12" fill="#43546E">see: macOS accessibility tree (JXA), then a screenshot as vision fallback</text>
+  <text x="78" y="674" font-size="12" fill="#43546E">act: nut.js mouse and keyboard · open -a / open URL · a transparent overlay shows each step</text>
+  <text x="78" y="692" font-size="12" fill="#43546E">observation pauses while Cofounder drives · learned macros replay with no model calls</text>
+  <line x1="330" y1="560" x2="330" y2="586" stroke="#3D82DE" stroke-width="2" marker-end="url(#b)"/>
+
+  <!-- AWS -->
+  <rect x="660" y="100" width="500" height="640" rx="18" fill="#fff" stroke="#E9B27A"/>
+  <text x="682" y="130" font-size="16" font-weight="700" fill="#7A3E08">AWS</text>
+
+  <rect x="682" y="150" width="456" height="330" rx="14" fill="#FFF9F2" stroke="#E9B27A"/>
+  <text x="698" y="176" font-size="14" font-weight="700" fill="#7A3E08">Amazon Bedrock AgentCore Runtime</text>
+  <text x="698" y="196" font-size="12" fill="#6B4A2A">strands-agent/ · BedrockAgentCoreApp · POST /invocations</text>
+  <path d="M598 345 C 630 345, 640 190, 678 190" fill="none" stroke="#C7691A" stroke-width="2" marker-end="url(#o)"/>
+
+  <rect x="698" y="212" width="424" height="62" rx="10" fill="#FFF4E8" stroke="#E9B27A"/>
+  <text x="712" y="236" font-size="13" font-weight="600" fill="#7A3E08">Strands Agent: Workflow Analyst</text>
+  <text x="712" y="256" font-size="12" fill="#6B4A2A">judges evidence, rejects noise, never invents a workflow</text>
+
+  <rect x="698" y="290" width="206" height="176" rx="10" fill="#fff" stroke="#E9B27A"/>
+  <text x="712" y="312" font-size="12.5" font-weight="600" fill="#7A3E08">@tool functions</text>
+  <text x="712" y="334" font-size="12" fill="#6B4A2A">get_activity_overview</text>
+  <text x="712" y="354" font-size="12" fill="#6B4A2A">find_repeated_workflows</text>
+  <text x="712" y="374" font-size="12" fill="#6B4A2A">get_workflow_evidence</text>
+  <text x="712" y="394" font-size="12" fill="#6B4A2A">recall_memory</text>
+  <text x="712" y="414" font-size="12" fill="#6B4A2A">save_workflow (cites evidence)</text>
+  <text x="712" y="434" font-size="12" fill="#6B4A2A">remember_fact</text>
+
+  <rect x="916" y="290" width="206" height="176" rx="10" fill="#fff" stroke="#E9B27A"/>
+  <text x="930" y="312" font-size="12.5" font-weight="600" fill="#7A3E08">activity.py (no model)</text>
+  <text x="930" y="334" font-size="12" fill="#6B4A2A">redact titles</text>
+  <text x="930" y="354" font-size="12" fill="#6B4A2A">sessions (15-min gaps)</text>
+  <text x="930" y="374" font-size="12" fill="#6B4A2A">stations, flicker removal</text>
+  <text x="930" y="394" font-size="12" fill="#6B4A2A">non-overlapping n-grams</text>
+  <text x="930" y="414" font-size="12" fill="#6B4A2A">subsumption + rotation</text>
+  <text x="930" y="434" font-size="12" fill="#6B4A2A">dedupe, scoring</text>
+  <line x1="904" y1="380" x2="912" y2="380" stroke="#C7691A" stroke-width="2" marker-end="url(#o)"/>
+  <line x1="800" y1="274" x2="800" y2="286" stroke="#C7691A" stroke-width="2" marker-end="url(#o)"/>
+
+  <rect x="682" y="520" width="456" height="120" rx="14" fill="#232F3E"/>
+  <text x="698" y="550" font-size="15" font-weight="700" fill="#FF9900">Amazon Bedrock</text>
+  <text x="698" y="574" font-size="12" fill="#E6EAF0">Claude Sonnet 4.6, used by:</text>
+  <text x="698" y="594" font-size="12" fill="#E6EAF0">· the Strands agent (BedrockModel)</text>
+  <text x="698" y="614" font-size="12" fill="#E6EAF0">· the desktop app via the Converse API: chat, planner, vision</text>
+  <line x1="910" y1="480" x2="910" y2="516" stroke="#C7691A" stroke-width="2" marker-end="url(#o)"/>
+  <path d="M598 650 C 640 650, 640 580, 678 580" fill="none" stroke="#C7691A" stroke-width="2" marker-end="url(#o)"/>
+
+  <text x="682" y="690" font-size="12" fill="#5A6B85">IAM: the runtime execution role (Bedrock InvokeModel);</text>
+  <text x="682" y="708" font-size="12" fill="#5A6B85">the desktop user (InvokeAgentRuntime, Converse). No keys in the app.</text>
+</svg>
